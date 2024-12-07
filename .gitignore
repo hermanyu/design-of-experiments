@@ -1,1 +1,10 @@
+# data files
 .csv
+
+# local environment data
+.Rproj.user
+.Renviron
+
+# html artifacts outside of designated folder
+notebooks/*.html
+notebooks/*/*.html
