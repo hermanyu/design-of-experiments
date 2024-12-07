@@ -4087,8 +4087,8 @@ FILE_PATH = paste0(DATA_DIR, &quot;/lesson1_data.txt&quot;)
 df &lt;- readr::read_delim(FILE_PATH, delim = &quot;\t&quot;)
 
 DT::datatable(df)</code></pre>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-75bdabc88f73eff25223" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-75bdabc88f73eff25223">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6"],[21,19.5,22.5,21.5,20.5,21],[32,30.5,25,27.5,28,28.6],[22.5,26,28,27,26.5,25.2],[28,27.5,31,29.5,30,29.2]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Control<\/th>\n      <th>F1<\/th>\n      <th>F2<\/th>\n      <th>F3<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Control","targets":1},{"name":"F1","targets":2},{"name":"F2","targets":3},{"name":"F3","targets":4}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-5eee1854ea603807568a" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-5eee1854ea603807568a">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6"],[21,19.5,22.5,21.5,20.5,21],[32,30.5,25,27.5,28,28.6],[22.5,26,28,27,26.5,25.2],[28,27.5,31,29.5,30,29.2]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Control<\/th>\n      <th>F1<\/th>\n      <th>F2<\/th>\n      <th>F3<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"Control","targets":1},{"name":"F1","targets":2},{"name":"F2","targets":3},{"name":"F3","targets":4}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <p>Cursory inspection of the data seems to indicate that the treatment
 groups <span class="math inline">\(F1\)</span>, <span class="math inline">\(F2\)</span>, and <span class="math inline">\(F3\)</span> are effective. The plant heights for
 the treatment group are generally larger than the control group:</p>
@@ -4182,8 +4182,8 @@ tibble(
   `F-value` = c(NA, NA, NA)
 ) %&gt;% 
   datatable()</code></pre>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-b63f517b271525fd8d37" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-b63f517b271525fd8d37">{"x":{"filter":"none","vertical":false,"data":[["1","2","3"],["treatment","error","total"],[null,null,null],[null,null,null],[null,null,null],[null,null,null]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>source<\/th>\n      <th>sum of squares (SS)<\/th>\n      <th>degrees of freedom (df)<\/th>\n      <th>mean sum of squares (MS)<\/th>\n      <th>F-value<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"source","targets":1},{"name":"sum of squares (SS)","targets":2},{"name":"degrees of freedom (df)","targets":3},{"name":"mean sum of squares (MS)","targets":4},{"name":"F-value","targets":5}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-822e60245499465befe2" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-822e60245499465befe2">{"x":{"filter":"none","vertical":false,"data":[["1","2","3"],["treatment","error","total"],[null,null,null],[null,null,null],[null,null,null],[null,null,null]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>source<\/th>\n      <th>sum of squares (SS)<\/th>\n      <th>degrees of freedom (df)<\/th>\n      <th>mean sum of squares (MS)<\/th>\n      <th>F-value<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"source","targets":1},{"name":"sum of squares (SS)","targets":2},{"name":"degrees of freedom (df)","targets":3},{"name":"mean sum of squares (MS)","targets":4},{"name":"F-value","targets":5}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <p>The <code>treatment</code> row corresponds to the calculations for
 the between-group variation. The <code>error</code> row corresponds to
 the calculations for the within-group variation. The <code>total</code>
@@ -4218,7 +4218,7 @@ raw deviations will always net out to <span class="math inline">\(0\)</span>:</p
 <p><em>Proof:</em></p>
 <p><span class="math display">\[
 \begin{align*}
-\sum_{i=1}^n (Y_i - \overline{Y_{.}}) &amp;= \sum_{i=1}^n Y_i -
+\sum_{i=1}^n (Y_i - \overline{Y_{.}})^2 &amp;= \sum_{i=1}^n Y_i -
 \sum_{i=1}^n\overline{Y_{.}}\\
 &amp;= \sum_{i=1}^n Y_i - \sum_{i=1}^n\frac{\sum_{i=1}^n Y_i}{n}\\
 &amp;= \sum_{i=1}^n Y_i - n\frac{\sum_{i=1}^n Y_i}{n}\\
@@ -4301,8 +4301,8 @@ tibble(
   `F-value` = c(NA, NA, NA)
 ) %&gt;% 
   datatable()</code></pre>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-61893068f09689f49ac2" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-61893068f09689f49ac2">{"x":{"filter":"none","vertical":false,"data":[["1","2","3"],["treatment","error","total"],[null,null,null],[null,null,null],[null,null,null],[null,null,null]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>source<\/th>\n      <th>sum of squares (SS)<\/th>\n      <th>degrees of freedom (df)<\/th>\n      <th>mean sum of squares (MS)<\/th>\n      <th>F-value<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"source","targets":1},{"name":"sum of squares (SS)","targets":2},{"name":"degrees of freedom (df)","targets":3},{"name":"mean sum of squares (MS)","targets":4},{"name":"F-value","targets":5}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-a9e1d96d929bcb014466" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a9e1d96d929bcb014466">{"x":{"filter":"none","vertical":false,"data":[["1","2","3"],["treatment","error","total"],[null,null,null],[null,null,null],[null,null,null],[null,null,null]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>source<\/th>\n      <th>sum of squares (SS)<\/th>\n      <th>degrees of freedom (df)<\/th>\n      <th>mean sum of squares (MS)<\/th>\n      <th>F-value<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"source","targets":1},{"name":"sum of squares (SS)","targets":2},{"name":"degrees of freedom (df)","targets":3},{"name":"mean sum of squares (MS)","targets":4},{"name":"F-value","targets":5}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <p>To fill in the ANOVA table, we must compute the following
 quantities:</p>
 <ol style="list-style-type: decimal">
@@ -4322,8 +4322,8 @@ df_long &lt;- df %&gt;%
   )
 
 datatable(df_long)</code></pre>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-2165b8775afdb589cfd5" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-2165b8775afdb589cfd5">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24"],["Control","F1","F2","F3","Control","F1","F2","F3","Control","F1","F2","F3","Control","F1","F2","F3","Control","F1","F2","F3","Control","F1","F2","F3"],[21,32,22.5,28,19.5,30.5,26,27.5,22.5,25,28,31,21.5,27.5,27,29.5,20.5,28,26.5,30,21,28.6,25.2,29.2]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>group<\/th>\n      <th>height<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"group","targets":1},{"name":"height","targets":2}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-4f59dd32107787e0179e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-4f59dd32107787e0179e">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24"],["Control","F1","F2","F3","Control","F1","F2","F3","Control","F1","F2","F3","Control","F1","F2","F3","Control","F1","F2","F3","Control","F1","F2","F3"],[21,32,22.5,28,19.5,30.5,26,27.5,22.5,25,28,31,21.5,27.5,27,29.5,20.5,28,26.5,30,21,28.6,25.2,29.2]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>group<\/th>\n      <th>height<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"group","targets":1},{"name":"height","targets":2}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <p>First, we will compute the Total SS and Treatment SS. This requires
 computing the grand mean and the group means for each group.</p>
 <pre class="r"><code># Total SS
@@ -4354,8 +4354,8 @@ tibble(
   `F-value` = c(NA, NA, NA)
 ) %&gt;% 
   datatable()</code></pre>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-e3d8c34f876dbdfb1682" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-e3d8c34f876dbdfb1682">{"x":{"filter":"none","vertical":false,"data":[["1","2","3"],["treatment","error","total"],[251.44,61.03333333333333,312.4733333333334],[null,null,null],[null,null,null],[null,null,null]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>source<\/th>\n      <th>sum of squares (SS)<\/th>\n      <th>degrees of freedom (df)<\/th>\n      <th>mean sum of squares (MS)<\/th>\n      <th>F-value<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"source","targets":1},{"name":"sum of squares (SS)","targets":2},{"name":"degrees of freedom (df)","targets":3},{"name":"mean sum of squares (MS)","targets":4},{"name":"F-value","targets":5}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e703767ae2f829f1d90c" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e703767ae2f829f1d90c">{"x":{"filter":"none","vertical":false,"data":[["1","2","3"],["treatment","error","total"],[251.44,61.03333333333333,312.4733333333334],[null,null,null],[null,null,null],[null,null,null]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>source<\/th>\n      <th>sum of squares (SS)<\/th>\n      <th>degrees of freedom (df)<\/th>\n      <th>mean sum of squares (MS)<\/th>\n      <th>F-value<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"source","targets":1},{"name":"sum of squares (SS)","targets":2},{"name":"degrees of freedom (df)","targets":3},{"name":"mean sum of squares (MS)","targets":4},{"name":"F-value","targets":5}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <p>Next we fill in the degrees of freedom. The Treatment df = <span class="math inline">\(T-1\)</span> since we used <span class="math inline">\(T\)</span> treatment means to compute the
 Treatment SS. The Total df = <span class="math inline">\(N - 1\)</span>
 since we used all <span class="math inline">\(N\)</span> data points of
@@ -4374,8 +4374,8 @@ tibble(
   `F-value` = c(NA, NA, NA)
 ) %&gt;% 
   datatable()</code></pre>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-700859b959f973904440" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-700859b959f973904440">{"x":{"filter":"none","vertical":false,"data":[["1","2","3"],["treatment","error","total"],[251.44,61.03333333333333,312.4733333333334],[3,20,23],[null,null,null],[null,null,null]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>source<\/th>\n      <th>sum of squares (SS)<\/th>\n      <th>degrees of freedom (df)<\/th>\n      <th>mean sum of squares (MS)<\/th>\n      <th>F-value<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"source","targets":1},{"name":"sum of squares (SS)","targets":2},{"name":"degrees of freedom (df)","targets":3},{"name":"mean sum of squares (MS)","targets":4},{"name":"F-value","targets":5}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-8e95a6e7ab8099345d8e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-8e95a6e7ab8099345d8e">{"x":{"filter":"none","vertical":false,"data":[["1","2","3"],["treatment","error","total"],[251.44,61.03333333333333,312.4733333333334],[3,20,23],[null,null,null],[null,null,null]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>source<\/th>\n      <th>sum of squares (SS)<\/th>\n      <th>degrees of freedom (df)<\/th>\n      <th>mean sum of squares (MS)<\/th>\n      <th>F-value<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"source","targets":1},{"name":"sum of squares (SS)","targets":2},{"name":"degrees of freedom (df)","targets":3},{"name":"mean sum of squares (MS)","targets":4},{"name":"F-value","targets":5}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <p>Finally, the Mean Sum Of Squares is the SS column divided by the DF
 column. We only need the Treatment MS and the Error MS:</p>
 <pre class="r"><code>treatment_ms = treatment_ss/treatment_df
@@ -4390,8 +4390,8 @@ tibble(
   `F-value` = c(NA, NA, NA)
 ) %&gt;% 
   datatable()</code></pre>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-223b576f2d995bfbaf03" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-223b576f2d995bfbaf03">{"x":{"filter":"none","vertical":false,"data":[["1","2","3"],["treatment","error","total"],[251.44,61.03333333333333,312.4733333333334],[3,20,23],[83.81333333333335,3.051666666666667,null],[null,null,null]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>source<\/th>\n      <th>sum of squares (SS)<\/th>\n      <th>degrees of freedom (df)<\/th>\n      <th>mean sum of squares (MS)<\/th>\n      <th>F-value<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3,4]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"source","targets":1},{"name":"sum of squares (SS)","targets":2},{"name":"degrees of freedom (df)","targets":3},{"name":"mean sum of squares (MS)","targets":4},{"name":"F-value","targets":5}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-138c40e3c7788fc62df5" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-138c40e3c7788fc62df5">{"x":{"filter":"none","vertical":false,"data":[["1","2","3"],["treatment","error","total"],[251.44,61.03333333333333,312.4733333333334],[3,20,23],[83.81333333333335,3.051666666666667,null],[null,null,null]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>source<\/th>\n      <th>sum of squares (SS)<\/th>\n      <th>degrees of freedom (df)<\/th>\n      <th>mean sum of squares (MS)<\/th>\n      <th>F-value<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3,4]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"source","targets":1},{"name":"sum of squares (SS)","targets":2},{"name":"degrees of freedom (df)","targets":3},{"name":"mean sum of squares (MS)","targets":4},{"name":"F-value","targets":5}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="the-f-test" class="section level2">
 <h2>The F-test</h2>
@@ -4421,8 +4421,8 @@ tibble(
   `F-value` = c(f_stat, NA, NA)
 ) %&gt;% 
   datatable()</code></pre>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-876e9ae7fdb98e49fdaa" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-876e9ae7fdb98e49fdaa">{"x":{"filter":"none","vertical":false,"data":[["1","2","3"],["treatment","error","total"],[251.44,61.03333333333333,312.4733333333334],[3,20,23],[83.81333333333335,3.051666666666667,null],[27.46477334789733,null,null]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>source<\/th>\n      <th>sum of squares (SS)<\/th>\n      <th>degrees of freedom (df)<\/th>\n      <th>mean sum of squares (MS)<\/th>\n      <th>F-value<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3,4,5]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"source","targets":1},{"name":"sum of squares (SS)","targets":2},{"name":"degrees of freedom (df)","targets":3},{"name":"mean sum of squares (MS)","targets":4},{"name":"F-value","targets":5}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-cb9a8297019c3a72ac8f" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-cb9a8297019c3a72ac8f">{"x":{"filter":"none","vertical":false,"data":[["1","2","3"],["treatment","error","total"],[251.44,61.03333333333333,312.4733333333334],[3,20,23],[83.81333333333335,3.051666666666667,null],[27.46477334789733,null,null]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>source<\/th>\n      <th>sum of squares (SS)<\/th>\n      <th>degrees of freedom (df)<\/th>\n      <th>mean sum of squares (MS)<\/th>\n      <th>F-value<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3,4,5]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"source","targets":1},{"name":"sum of squares (SS)","targets":2},{"name":"degrees of freedom (df)","targets":3},{"name":"mean sum of squares (MS)","targets":4},{"name":"F-value","targets":5}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <p>On it’s own however, the <span class="math inline">\(F\)</span>-statistic doesn’t quite give us what we
 need since there isn’t really a benchmark for what constitutes a “very
 large” <span class="math inline">\(F\)</span>-statistic. In order
@@ -4519,8 +4519,8 @@ results.</p>
 
 tukey_test_table %&gt;% 
   datatable()</code></pre>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-63200460cd948b074f91" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-63200460cd948b074f91">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4"],["F3","F1","F2","Control"],[29.2,28.6,25.86666666666667,21],["","","",""]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>group<\/th>\n      <th>group_mean<\/th>\n      <th>label<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"group","targets":1},{"name":"group_mean","targets":2},{"name":"label","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-121f6c0b0b7d44eb9d30" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-121f6c0b0b7d44eb9d30">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4"],["F3","F1","F2","Control"],[29.2,28.6,25.86666666666667,21],["","","",""]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>group<\/th>\n      <th>group_mean<\/th>\n      <th>label<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"group","targets":1},{"name":"group_mean","targets":2},{"name":"label","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <p>Now we begin looking at the difference between the group means. The
 largest group mean is <span class="math inline">\(F3\)</span> and it’s
 nearest lower neighbor is <span class="math inline">\(F1\)</span>. The
@@ -4540,8 +4540,8 @@ character ‘a’.</p>
 
 tukey_test_table %&gt;% 
   datatable()</code></pre>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-8c6849e1a077ba9f8548" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-8c6849e1a077ba9f8548">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4"],["F3","F1","F2","Control"],[29.2,28.6,25.86666666666667,21],["a","a","",""]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>group<\/th>\n      <th>group_mean<\/th>\n      <th>label<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"group","targets":1},{"name":"group_mean","targets":2},{"name":"label","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-6c8621cb21a400762e38" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-6c8621cb21a400762e38">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4"],["F3","F1","F2","Control"],[29.2,28.6,25.86666666666667,21],["a","a","",""]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>group<\/th>\n      <th>group_mean<\/th>\n      <th>label<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"group","targets":1},{"name":"group_mean","targets":2},{"name":"label","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <p>Since <span class="math inline">\(F3\)</span> and <span class="math inline">\(F1\)</span> are indistinguisable, our next best
 hope is look for a difference between <span class="math inline">\(F3\)</span> and <span class="math inline">\(F2\)</span>. That difference is <span class="math inline">\(29.2 - 25.87 = 3.33\)</span> which is larger than
 our yardstick of <span class="math inline">\(w = 2.82\)</span>.
@@ -4564,8 +4564,8 @@ indicate it’s different from <span class="math inline">\(F1\)</span>.</p>
 
 tukey_test_table %&gt;% 
   datatable()</code></pre>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-f7181a5dfbc0ac35a272" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-f7181a5dfbc0ac35a272">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4"],["F3","F1","F2","Control"],[29.2,28.6,25.86666666666667,21],["a","a","b",""]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>group<\/th>\n      <th>group_mean<\/th>\n      <th>label<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"group","targets":1},{"name":"group_mean","targets":2},{"name":"label","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-0135f27f823778d5f0bd" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-0135f27f823778d5f0bd">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4"],["F3","F1","F2","Control"],[29.2,28.6,25.86666666666667,21],["a","a","b",""]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>group<\/th>\n      <th>group_mean<\/th>\n      <th>label<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"group","targets":1},{"name":"group_mean","targets":2},{"name":"label","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <p>Since <span class="math inline">\(F2\)</span> is different from <span class="math inline">\(F3\)</span>, we now have to go back to <span class="math inline">\(F1\)</span> and ask: is <span class="math inline">\(F1\)</span> different from <span class="math inline">\(F2\)</span>? The difference between these two
 groups is <span class="math inline">\(28.6-25.7 = 2.73\)</span> which is
 less than our yardstick of <span class="math inline">\(w=2.82\)</span>.
@@ -4590,8 +4590,8 @@ This means that <span class="math inline">\(F1\)</span> and <span class="math in
 
 tukey_test_table %&gt;% 
   datatable()</code></pre>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-f9378b546e051a53b929" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-f9378b546e051a53b929">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4"],["F3","F1","F2","Control"],[29.2,28.6,25.86666666666667,21],["a","ab","b",""]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>group<\/th>\n      <th>group_mean<\/th>\n      <th>label<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"group","targets":1},{"name":"group_mean","targets":2},{"name":"label","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-f2f23dcc9099f3639ce5" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-f2f23dcc9099f3639ce5">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4"],["F3","F1","F2","Control"],[29.2,28.6,25.86666666666667,21],["a","ab","b",""]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>group<\/th>\n      <th>group_mean<\/th>\n      <th>label<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"group","targets":1},{"name":"group_mean","targets":2},{"name":"label","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <p>Note that since <span class="math inline">\(F3 &gt; F2\)</span> and
 <span class="math inline">\(F2 \geq \text{Control}\)</span>, we can
 automatically infer that <span class="math inline">\(F3 &gt;
@@ -4628,8 +4628,8 @@ that it’s different from <span class="math inline">\(F1\)</span>.</p>
 
 tukey_test_table %&gt;% 
   datatable()</code></pre>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-64349ea7401240ab04d9" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-64349ea7401240ab04d9">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4"],["F3","F1","F2","Control"],[29.2,28.6,25.86666666666667,21],["a","ab","b","c"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>group<\/th>\n      <th>group_mean<\/th>\n      <th>label<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"group","targets":1},{"name":"group_mean","targets":2},{"name":"label","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-6ead3f50aa4e49d5c808" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-6ead3f50aa4e49d5c808">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4"],["F3","F1","F2","Control"],[29.2,28.6,25.86666666666667,21],["a","ab","b","c"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>group<\/th>\n      <th>group_mean<\/th>\n      <th>label<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"group","targets":1},{"name":"group_mean","targets":2},{"name":"label","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <p>Finally, the only other comparison left to be made is between <span class="math inline">\(F2\)</span> and the control. The difference is
 <span class="math inline">\(25.87 - 21 = 4.87\)</span> and is larger
 than <span class="math inline">\(w = 2.82\)</span>. Therefore there is a
