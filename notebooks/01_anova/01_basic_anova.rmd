@@ -1,0 +1,502 @@
+---
+title: "01 Basic Anova"
+author: "Herman Yu"
+output:
+  rmdformats::downcute
+---
+
+```{r, include = FALSE}
+options(scipen = 999)
+```
+
+
+# Introduction
+
+**Analysis of variance (ANOVA)** is the method of comparing the *between-group variance* ("true signal") against the *within-group variance* ("random noise"). To do this, we estimate the between-group and within-group variance, then compare them using the following ratio:
+
+$$
+\frac{\text{Between Group Variance}}{\text{Within Group Variance}}
+$$
+
+The crux of this comparison is that the ratio follows an $F$-distribution, which allows us to generate p-values for the sample data. This procedure is called the **one-way ANOVA** and it's key utility is that we can conduct hypothesis test for multiple groups at once, without inflating the Type I error rate (i.e. false positive rate). The one-way ANOVA will only tell us that one of the groups are different, but not which one. To determine which groups are different from which, we supplement the one-way ANOVA with a procedure called the **Tukey test** to compare pairwise group means.
+
+---
+
+# 1.1 Hypothesis Testing
+
+## Experimental Setup
+Consider the following setup: an botanist is studying the effects of 3 different fertilizers on a specific plant species. Specifically, the botanist wants to answer the following 2 questions:
+
+1) Which (if any) of the fertilizers increase plant height?
+2) If some of the fertilizers actually work, which one works the best?
+
+To answer this question, the botanist conducts the following experiment: 
+
+1) They setup 4 groups of plants: $C$ the control, $F1$ fertilizer 1, $F2$ fertilizer 2, $F3$ fertilizer 3.
+2) They randomly select 24 seedlings from a single plant species.
+3) From the 24 seedlings, they randomly assign 1 seedling to each group: $C$, $F1$, $F2$, $F3$. This continues until all groups have 6 seedlings each.
+4) The seedlings are grown using the fertilizer for their assigned group.
+
+After letting the plants grow for some period of time, the botanist records the height of each plant:
+
+```{r, warning = FALSE, message=FALSE, results="asis"}
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(DT)
+# load path to folder containing data
+DATA_DIR = paste0(Sys.getenv("DATA_DIR"), "anova/")
+FILE_PATH = paste0(DATA_DIR, "/lesson1_data.txt")
+
+df <- readr::read_delim(FILE_PATH, delim = "\t")
+
+DT::datatable(df)
+```
+
+Cursory inspection of the data seems to indicate that the treatment groups $F1$, $F2$, and $F3$ are effective. The plant heights for the treatment group are generally larger than the control group:
+
+```{r}
+# mean plant height for each group
+df %>% 
+  summarise(
+    across(everything(), ~mean(., na.rm = TRUE))
+  )
+```
+
+However, it's hard to say whether the differences in plant height are due to actual treatment effectiveness, or just random noise. In order to evaluate the data, the botanist needs to formulate a null hypothesis. Let $\mu_c$ the true mean of the control, $\mu_1$ the true mean of $F1$, $\mu_2$ the true mean of $F_2$, and $\mu_3$ the true mean of $F3$. Then:
+
+$$
+\begin{align*}
+H_0&:\mu_c = \mu_1 = \mu_2 = \mu_3\\
+H_A&:\mu_i \neq \mu_j & \text{for some } i,j \in \{c,1,2,3\}
+\end{align*}
+$$
+
+To test this hypothesis, the researcher needs to develop a sample statistic to quantify the strength of the evidence against the null hypothesis. This is where the one-way ANOVA comes in.
+
+---
+
+# 1.2 Motivation For ANOVA
+
+The motivation for the ANOVA comes from visualizing the data in the box plot:
+
+```{r}
+# pivot table to long format
+# to make it easier to manipulate
+df_long <- df %>% 
+  pivot_longer(
+    cols = everything(),
+    names_to = "treatment",
+    values_to = "height"
+  )
+
+grand_mean <- mean(df_long$height)
+
+df_long %>% 
+  ggplot(aes(x = treatment, y = height)) + 
+  geom_boxplot() + 
+  geom_hline(yintercept = grand_mean, linetype = "dashed")
+```
+
+The dashed horizontal line is the "grand mean" which is just the sample mean of the entire data set. Visually, we can see that the entirety of the boxes for $F1$, $F2$, and $F3$ are higher than the control group. If we think of the boxes as representing the distribution of the data, then it seems unlikely that distribution of the control group could randomly generate the plant heights in the treatment group. In other words: the *lengths* of the boxes don't seem to account for the *shifts* of the boxes. We can formalize this concept by defining the following terms:
+
+* The **between-group variation** is the deviation of the group means from the grand mean. Intuitively, these deviations indicate true differences between the treatment and control groups.
+* The **within-group variation** is the deviation within each group (i.e. how "long" the boxes are). Intuitively, this is the difference in data due to natural randomness.
+
+When we say "the lengths of the boxes don't account for the shifts of the boxes", what we mean is that the *between-group variation* seems to be very large relative to the *within-group variation*. However, "very large" is a subjective statement, so we need to formalize this size-difference into a quantifiable comparison. 
+
+---
+
+# 1.3 The Basic One-Way ANOVA
+
+## The ANOVA Table
+
+The **one-way ANOVA** is a method for quantifying the size-difference of the *between-group variation* (aka treatment variation) versus the *within-group variation* (random noise). To understand the constituent pieces of the ANOVA, it is useful to start with an overarching view of the ANOVA procedure. The ANOVA is done by computing the quantities needed to fill out the following table:
+
+```{r}
+# one-way ANOVA table
+tibble(
+  source = c("treatment", "error", "total"),
+  `sum of squares (SS)`  = c(NA, NA, NA),
+  `degrees of freedom (df)` = c(NA, NA, NA),
+  `mean sum of squares (MS)`  = c(NA, NA, NA),
+  `F-value` = c(NA, NA, NA)
+) %>% 
+  datatable()
+```
+
+The `treatment` row corresponds to the calculations for the between-group variation. The `error` row corresponds to the calculations for the within-group variation. The `total` row corresponds to the calculation for total population variation.
+
+
+## Variation Decomposition
+
+### Variance and Deviation
+For a random variable $Y$, the **variance** of $Y$ is defined as:
+
+$$
+\sigma^2 = E[(Y - E[Y])^2] = E[(Y - \mu)^2]
+$$
+
+The quantity $(Y-\mu)^2$ measures the (square) deviation of $Y$ around it's mean $E[Y] = \mu$. Given an i.i.d. sample $Y_1,\ldots, Y_n$ of a random variable $Y$, we can estimate the variance of $Y$ using a statistic called the **sample variance**:
+
+$$
+s^2 = \frac{\sum_{i=1}^n (Y_i - \overline{Y_{.}})^2}{n-1} = \frac{\text{total sum of squares}}{\text{total degrees of freedom}}
+$$
+
+One natural question to ask is: why do we use square deviations as opposed to just the raw deviations? The answer lies in the fact that the raw deviations will always net out to $0$:
+
+**Lemma 1:** 
+$$\sum_{i=1}^n (Y_i - \overline{Y_{.}}) = 0$$
+
+*Proof:*
+
+$$
+\begin{align*}
+\sum_{i=1}^n (Y_i - \overline{Y_{.}}) &= \sum_{i=1}^n Y_i - \sum_{i=1}^n\overline{Y_{.}}\\
+&= \sum_{i=1}^n Y_i - \sum_{i=1}^n\frac{\sum_{i=1}^n Y_i}{n}\\
+&= \sum_{i=1}^n Y_i - n\frac{\sum_{i=1}^n Y_i}{n}\\
+&=  \sum_{i=1}^n Y_i - \sum_{i=1}^n Y_i\\
+&= 0
+\end{align*}
+$$
+QED.
+
+### Decomposition of Total Variance
+
+The idea behind the ANOVA is to decompose the "total variation" into 2 parts: the between-group variation (treatment) and the within-group variation (random noise). To illustrate this, let $Y_{ij}$ denote the $j$-th observation in the $i$-th group. Let $\overline{Y_{..}}$ denote the "grand mean" of the entire sample. Let $\overline{Y_{i.}}$ denote the group mean of the $i$-th group. Then the total sum of squares is:
+
+$$
+\text{Total SS} = \sum_{i=1}^T\sum_{j=1}^n (Y_{ij} - \overline{Y_{..}})^2
+$$
+
+The key insight used by the ANOVA is that the Total SS can be decomposed mathematically in the following way:
+
+**Sum Of Squares Decomposition Theorem:**
+
+$$
+\begin{align*}
+\text{Total SS} &= \text{Error SS} + \text{Treatment SS}\\
+&\\
+\sum_{i=1}^T\sum_{j=1}^n (Y_{ij} - \overline{Y_{..}})^2 &= \sum_{i=1}^T\sum_{j=1}^n (Y_{ij} - \overline{Y_{i.}})^2 + \sum_{i=1}^Tn(\overline{Y_{i.}} - \overline{Y_{..}})^2\\
+\end{align*}
+$$
+
+*Proof:*
+
+Note that by Lemma 1, the sum of deviations within any group will net out to be $0$. That is: $\sum_{j=1}^n (Y_{ij} - \overline{Y_{i.}}) = 0$. With this in mind, we can expand out the Total SS and insert Lemma 1 in the 2nd-to-last line below. Note that most of the manipulations will happen on cross-term on the right hand side:
+
+$$
+\begin{align*}
+\sum_{i=1}^T\sum_{j=1}^n Y_{ij} - \overline{Y_{..}} &= \sum_{i=1}^T\sum_{j=1}^n [(Y_{ij} - \overline{Y_{i.}}) + (\overline{Y_{i.}} - \overline{Y_{..}})]^2\\
+&= \sum_{i=1}^T\sum_{j=1}^n (Y_{ij} - \overline{Y_{i.}})^2 + (\overline{Y_{i.}} - \overline{Y_{..}})^2 + 2(Y_{ij} - \overline{Y_{i.}})(\overline{Y_{i.}} - \overline{Y_{..}})\\
+&= \sum_{i=1}^T\sum_{j=1}^n (Y_{ij} - \overline{Y_{i.}})^2 + \sum_{i=1}^T\sum_{j=1}^n(\overline{Y_{i.}} - \overline{Y_{..}})^2 + 2\sum_{i=1}^T\sum_{j=1}^n(Y_{ij} - \overline{Y_{i.}})(\overline{Y_{i.}} - \overline{Y_{..}})\\
+&= \sum_{i=1}^T\sum_{j=1}^n (Y_{ij} - \overline{Y_{i.}})^2 + \sum_{i=1}^T n (\overline{Y_{i.}} - \overline{Y_{..}})^2 + 2\sum_{i=1}^T\sum_{j=1}^n(Y_{ij} - \overline{Y_{i.}})\overline{Y_{i.}} - (Y_{ij} - \overline{Y_{i.}})\overline{Y_{..}}\\
+&= \sum_{i=1}^T\sum_{j=1}^n (Y_{ij} - \overline{Y_{i.}})^2 + \sum_{i=1}^T n (\overline{Y_{i.}} - \overline{Y_{..}})^2 + 2\sum_{i=1}^T\sum_{j=1}^n(Y_{ij} - \overline{Y_{i.}})\overline{Y_{i.}} - 2\sum_{i=1}^T\sum_{j=1}^n(Y_{ij} - \overline{Y_{i.}})\overline{Y_{..}}\\\
+&= \sum_{i=1}^T\sum_{j=1}^n (Y_{ij} - \overline{Y_{i.}})^2 + \sum_{i=1}^T n (\overline{Y_{i.}} - \overline{Y_{..}})^2 + 2\sum_{i=1}^T 0 \cdot \overline{Y_{i.}} - 2\sum_{i=1}^T 0\cdot\overline{Y_{..}}\\
+&= \sum_{i=1}^T\sum_{j=1}^n (Y_{ij} - \overline{Y_{i.}})^2 + \sum_{i=1}^T n (\overline{Y_{i.}} - \overline{Y_{..}})^2\\
+\end{align*}
+$$
+QED.
+
+## Performing The ANOVA
+
+With the theory mathemical theory fleshed out, let's begin filling in the ANOVA table for the plant experiment. Recall the ANOVA table from before:
+
+```{r}
+# one-way ANOVA table
+tibble(
+  source = c("treatment", "error", "total"),
+  `sum of squares (SS)`  = c(NA, NA, NA),
+  `degrees of freedom (df)` = c(NA, NA, NA),
+  `mean sum of squares (MS)`  = c(NA, NA, NA),
+  `F-value` = c(NA, NA, NA)
+) %>% 
+  datatable()
+```
+
+To fill in the ANOVA table, we must compute the following quantities:
+
+1) The Total SS and Treatment SS
+2) The Total df and Treatment df
+3) The Treatment MS and the Error MS.
+
+Note that since Total SS = Error SS + Treatment SS, we get the Error SS for free. Similarly, Error df = Total df - Treatment df.
+
+```{r}
+# pivot data into long format
+# to make code easier
+df_long <- df %>% 
+  pivot_longer(
+    cols = everything(),
+    names_to = "group",
+    values_to = "height"
+  )
+
+datatable(df_long)
+```
+
+First, we will compute the Total SS and Treatment SS. This requires computing the grand mean and the group means for each group.
+
+```{r}
+# Total SS
+grand_mean <- mean(df_long$height)
+
+total_ss <- sum( (df_long$height - grand_mean)^2 )
+
+# Treatment SS
+group_means <- df_long %>% 
+  group_by(group) %>% 
+  summarise(
+    group_mean = mean(height)
+  )
+  
+num_points_per_group <- length(df$Control)
+
+treatment_ss <- sum( num_points_per_group *(group_means$group_mean - grand_mean)^2 )
+
+# Error SS
+error_ss = total_ss - treatment_ss
+```
+
+We can now fill in the ANOVA Table as follows:
+
+```{r}
+# one-way ANOVA table
+tibble(
+  source = c("treatment", "error", "total"),
+  `sum of squares (SS)`  = c(treatment_ss, error_ss, total_ss),
+  `degrees of freedom (df)` = c(NA, NA, NA),
+  `mean sum of squares (MS)`  = c(NA, NA, NA),
+  `F-value` = c(NA, NA, NA)
+) %>% 
+  datatable()
+```
+
+Next we fill in the degrees of freedom. The Treatment df = $T-1$ since we used $T$ treatment means to compute the Treatment SS. The Total df = $N - 1$ since we used all $N$ data points of the sample to compute the Treatment SS. The Error df is the difference between the Total and Treatment df.
+
+```{r}
+treatment_df <- length(group_means$group_mean) - 1
+total_df <- length(df_long$height) - 1
+error_df <- total_df - treatment_df
+
+# one-way ANOVA table
+tibble(
+  source = c("treatment", "error", "total"),
+  `sum of squares (SS)`  = c(treatment_ss, error_ss, total_ss),
+  `degrees of freedom (df)` = c(treatment_df, error_df, total_df),
+  `mean sum of squares (MS)`  = c(NA, NA, NA),
+  `F-value` = c(NA, NA, NA)
+) %>% 
+  datatable()
+```
+
+Finally, the Mean Sum Of Squares is the SS column divided by the DF column. We only need the Treatment MS and the Error MS:
+
+```{r}
+treatment_ms = treatment_ss/treatment_df
+error_ms = error_ss/error_df
+
+# one-way ANOVA table
+tibble(
+  source = c("treatment", "error", "total"),
+  `sum of squares (SS)`  = c(treatment_ss, error_ss, total_ss),
+  `degrees of freedom (df)` = c(treatment_df, error_df, total_df),
+  `mean sum of squares (MS)`  = c(treatment_ms, error_ms, NA),
+  `F-value` = c(NA, NA, NA)
+) %>% 
+  datatable()
+```
+
+## The F-test
+
+We now have all the metrics necessary to quantify the difference of the between-group variation (Treatment MS) versus the within-group variation (Error MS). The Treatment MS represents variation due to group assignment, while the Error MS represents variation due to random noise. If the Treatment MS is "much larger" than the Error MS, this indicates that the random noise is not big enough to explain the differences between groups. To compare the sizes of Treatment MS versus Error MS, we look at their ratio:
+
+$$
+F = \frac{\text{Treatment MS}}{\text{Error MS}}
+$$
+
+This quantity is called the **$F$-statistic**; intuitively, the $F$-statistic represents the "signal-to-noise" ratio. We can fill in the final column of the ANOVA table using this ratio:
+
+```{r}
+f_stat <- treatment_ms / error_ms
+
+# one-way ANOVA table
+tibble(
+  source = c("treatment", "error", "total"),
+  `sum of squares (SS)`  = c(treatment_ss, error_ss, total_ss),
+  `degrees of freedom (df)` = c(treatment_df, error_df, total_df),
+  `mean sum of squares (MS)`  = c(treatment_ms, error_ms, NA),
+  `F-value` = c(f_stat, NA, NA)
+) %>% 
+  datatable()
+```
+
+On it's own however, the $F$-statistic doesn't quite give us what we need since there isn't really a benchmark for what constitutes a "very large" $F$-statistic. In order finally answer the original research question, we need to map the $F$-statistic to a $p$-value. This will require us to know what kind of distribution the $F$-statistic will follow.
+
+Generally speaking, the distribution of the $F$-statistic can be anything. However, if we know that:
+
+1) The deviations around the group means $Y_{ij} - \overline{Y_{i.}}$ are be i.i.d and follow a normal distribution of the form $Y_{ij} - \overline{Y_{i.}} \sim N(0, \sigma)$. 
+2) All groups $i$ have the same variance $\sigma$, i.e. the data is *homoscedastic*. 
+
+then it turns out the $F$-statistic will (approximately) follow an $F$-distribution. If we make these assumptions about our data, then we can compute a $p$-value using the $F$-distribution. 
+
+Before we compute the $p$-value though let's stipulate first the significance level as $\alpha = 0.05$, which will imply that the probability of a false positive is set to 1 out of 20. Now we can compute the p-value by using the cumulative $F$-distribution:
+
+```{r}
+pvalue <- 1 - pf(f_stat, df1 = treatment_df, df2 = error_df)
+
+pvalue
+```
+
+The estimated p-value states that there is a 1 in 500,000 chance we would see an $F$-statistic as extreme as our sample's value. This meets the significance threshold we establish beforehand, so we reject the null hypothesis and accept the alternative that *at least one* of the groups $C$, $F1$, $F2$, and $F3$ are different.
+
+---
+
+# 1.4 Tukey Test For Pairwise Means
+
+The one-way ANOVA created an $F$-statistic which was so extreme, we accepted the alternative that *at least one* of the groups $C$, $F1$, $F2$, and $F3$ are different. This answers the botanist's first question because at least one of the treatment means must be different from the control group. Now that we know that at least one treatment is doing *something*, the second question we must answer is *which* treatment works best. To answer this question, we can use a method called *Tukey's range test*.
+
+**Tukey's range test** essentially uses the Error MS to constructs a value $w$ which measures if two group means are sufficiently far apart. Intuitively, Tukey's $w$ value is a "yardstick" representing an indivisible unit of distance: if two group means are within a "yardstick" of each other, then their distance is $0$ and the groups are "indistinguishable".
+
+1) Compute the $w$ value using Tukey's studentized range distribution. The $w$ value is determined by the Error MS and the significance level $\alpha$ we wish to use.
+2) Rank the group means from largest to smallest.
+3) Starting from the largest group mean, compare the distance with the other group means. Do this for all group means in descending order.
+
+Note that the descending ordering in step 2 is used to optimize step 3 by leveraging the transitive property of the $\geq$ relation: $A \geq B$ and $B\geq C$ implies $A\geq C$. Using our plant example, let's go through Tukey's test step-by-step. First we compute the "yardstick" $w$ as follows:
+
+$$
+w = s\cdot q_{T, df_{error}}(\alpha)
+$$
+
+where:
+
+* $s$ is the standard error $s = \text{Error MS} / \text{Number of Replications}$
+* $q$ is the $q$-distribution defined by the parameters: $T$ is the number of groups and $df_{error}$ the Error DF
+* $\alpha$ is the significance level. 
+
+In R, this quantity can be computed using the `qtukey()` function:
+
+```{r}
+num_replications <- length(df$Control)
+
+std_error <- sqrt( error_ms / num_replications )
+
+w <- std_error * qtukey(p = 0.95, nmeans = length(group_means$group_mean), df = error_df)
+
+w
+```
+
+Next we rank the group means from largest to smallest. We'll include a column called `label` to keep track of the mean comparison results.
+
+```{r}
+tukey_test_table <- group_means %>% 
+  arrange(desc(group_mean)) %>% 
+  mutate(
+    label = ""
+  )
+
+tukey_test_table %>% 
+  datatable()
+```
+
+Now we begin looking at the difference between the group means. The largest group mean is $F3$ and it's nearest lower neighbor is $F1$. The difference between their means is $29.2 - 28.6 = 0.6$. This is less than our yardstick $w = 2.82$, so these means are *not* statistically different. That is the say, both groups seem to have the same mean. To indicate this, we label both groups with the same character 'a'.
+
+```{r}
+tukey_test_table <- tukey_test_table %>% 
+  mutate(
+    label = "",
+    label = case_when(
+      group %in% c("F1", "F3") ~ paste0(label, 'a'),
+      TRUE ~ label
+    )
+  )
+
+tukey_test_table %>% 
+  datatable()
+```
+
+Since $F3$ and $F1$ are indistinguisable, our next best hope is look for a difference between $F3$ and $F2$. That difference is $29.2 - 25.87 = 3.33$ which is larger than our yardstick of $w = 2.82$. Therefore, $F2$ is significantly different from $F3$, so we indicate this by giving $F2$ a label of 'b' to indicate it's different from $F1$. 
+
+```{r}
+tukey_test_table <- tukey_test_table %>% 
+  mutate(
+    label = "",
+    label = case_when(
+      group %in% c("F1", "F3") ~ paste0(label, 'a'),
+      TRUE ~ label
+    ),
+    label = case_when(
+      group %in% c("F2") ~ paste0(label, 'b'),
+      TRUE ~ label
+    )
+  )
+
+tukey_test_table %>% 
+  datatable()
+```
+
+Since $F2$ is different from $F3$, we now have to go back to $F1$ and ask: is $F1$ different from $F2$? The difference between these two groups is $28.6-25.7 = 2.73$ which is less than our yardstick of $w=2.82$. This means that $F1$ and $F2$ are indistinguishable, so we *append* the 'b' label onto $F1$:
+
+```{r}
+tukey_test_table <- tukey_test_table %>% 
+  mutate(
+    label = "",
+    label = case_when(
+      group %in% c("F3", "F1") ~ paste0(label, 'a'),
+      TRUE ~ label
+    ),
+    label = case_when(
+      group %in% c("F2") ~ paste0(label, 'b'),
+      TRUE ~ label
+    ),
+    label = case_when(
+      group %in% c("F1") ~ paste0(label, 'b'),
+      TRUE ~ label
+    )
+  )
+
+tukey_test_table %>% 
+  datatable()
+```
+
+Note that since $F3 > F2$ and $F2 \geq \text{Control}$, we can automatically infer that $F3 > \text{Control}$. No more remaining comparisons need to be made for $F3$, so we can move down to $F1$.
+
+For the $F1$ group, the only comparison left to be made is with the control group. The difference is $28.6 - 21 = 7.6$ and is larger than our yardstick of $w=2.82$. Thus there is a significant difference $F1$ and the control group. We give the control group a label of 'c' to indicate that it's different from $F1$.
+
+```{r}
+tukey_test_table <- tukey_test_table %>% 
+  mutate(
+    label = "",
+    label = case_when(
+      group %in% c("F3", "F1") ~ paste0(label, 'a'),
+      TRUE ~ label
+    ),
+    label = case_when(
+      group %in% c("F2") ~ paste0(label, 'b'),
+      TRUE ~ label
+    ),
+    label = case_when(
+      group %in% c("F1") ~ paste0(label, 'b'),
+      TRUE ~ label
+    ),
+    label = case_when(
+      group %in% c("Control") ~ paste0(label, 'c'),
+      TRUE ~ label
+    )
+  )
+
+tukey_test_table %>% 
+  datatable()
+```
+
+Finally, the only other comparison left to be made is between $F2$ and the control. The difference is $25.87 - 21 = 4.87$ and is larger than $w = 2.82$. Therefore there is a significant difference between $F2$ and the control group. Since both group already have distinct labels, no additional labeling is needed in the table.
+
+The interpretation for this final table is this: All three treatments $F1$, $F2$, and $F3$ are statistically better than no treatment. Furthermore the treatment $F3$ is statistically better than treatment $F2$.
+
+NOTE: the procedure outlined above is only valid when the groups all have equal sizes. This is reflected by the fact that the $w$ parameter only has a single $n$ to denote the same number of replications across all the groups. In an experiment where the groups have differing sizes, the Tukey-Kramer method can be used instead. Tukey-Kramer is almost the same as the procedure outlined above, but the standard error (and consequently the $w$ yardstick) will change with each pairwise-comparison.
+
+---
+
+<br>
+
